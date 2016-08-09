@@ -269,6 +269,7 @@ a.propButton img {
 /* Mocha Customization */
 #mochaToolbar {
     margin-top: 5px;
+    border-bottom: 1px solid #909090;
 }
 
 #mochaToolbar .divider {
@@ -479,4 +480,57 @@ td.statusBarSeparator {
     background-repeat: no-repeat;
     background-position: center 1px;
     background-size: 2px 18px;
+}
+
+#viewTabs {
+    height: 25px;
+    overflow: hidden;
+    position: fixed;
+    top: 31px;
+    right: 0px;
+}
+
+#viewTabs li {
+    height: 24px;
+    border-bottom: 1px #909090;
+    border-bottom-style: solid;
+}
+
+#viewTabs a {
+    height: 13px;
+    border-bottom: 1px #909090;
+    border-bottom-style: solid;
+    vertical-align: middle;
+    float: right;
+    margin-left: 0;
+    padding-left: 6px;
+}
+
+#viewTabs img {
+    margin-top: 6px;
+    margin-left: 9px;
+}
+
+#viewTabs.inMenu li {
+    border-bottom-color: #000;
+}
+
+#viewTabs.inMenu a {
+    border-bottom-color: #000;
+}
+
+#viewTabs li.selected {
+    height: 25px;
+    border-bottom: 0;
+    border-bottom-style: none;
+}
+
+#viewTabs li.selected a {
+    height: 13px;
+    border-bottom: 0;
+    border-bottom-style: none;
+}
+
+#viewTabs.inMenu {
+    top: -4px;
 }

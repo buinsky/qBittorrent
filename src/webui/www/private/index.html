@@ -63,6 +63,7 @@
                         <ul>
                         <li><a id="showTopToolbarLink"><img class="MyMenuIcon" src="theme/checked" alt="QBT_TR(&Top Toolbar)QBT_TR" width="16" height="16" onload="fixPNG(this)"/>QBT_TR(&Top Toolbar)QBT_TR</a></li>
                         <li><a id="speedInBrowserTitleBarLink"><img class="MyMenuIcon" src="theme/checked" alt="QBT_TR(S&peed in Title Bar)QBT_TR" width="16" height="16" onload="fixPNG(this)"/>QBT_TR(S&peed in Title Bar)QBT_TR</a></li>
+                        <li class="divider"><a id="showRssViewLink"><img class="MyMenuIcon" src="theme/checked" alt="QBT_TR(&RSS Reader)QBT_TR" width="16" height="16" onload="fixPNG(this)" style="opacity:0"/>QBT_TR(&RSS Reader)QBT_TR</a></li>
                         </ul>
                     </li>
                     <li>
@@ -96,6 +97,14 @@
                 </span>
                 <a id="preferencesButton" class="divider"><img class="mochaToolButton" title="QBT_TR(Options)QBT_TR" src="theme/preferences-system" alt="QBT_TR(Options)QBT_TR" width="24" height="24" onload="fixPNG(this)"/></a>
             </div>
+            <ul id="viewTabs" class="tab-menu" style="visibility: hidden;">
+                <li id="transfersViewTab" class="selected">
+                    <img src="theme/folder-remote" width="15" height="15" onload="fixPNG(this)"/><a>QBT_TR(Transfers)QBT_TR</a>
+                </li>
+                <li id="RSSViewTab">
+                    <img src="theme/application-rss+xml" width="15" height="15" onload="fixPNG(this)"/><a>QBT_TR(RSS)QBT_TR</a>
+                </li>
+            <ul>
         </div>
         <div id="pageWrapper">
         </div>

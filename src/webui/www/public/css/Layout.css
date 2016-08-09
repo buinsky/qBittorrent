@@ -221,7 +221,6 @@ li.divider {
 #pageWrapper {
 	position: relative;
 	overflow: hidden; /* This can be set to hidden or auto */
-	border-top: 1px solid #909090;
 	border-bottom: 1px solid #909090;
 	/*height: 100%;*/
 }

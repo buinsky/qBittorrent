@@ -2,30 +2,31 @@
 
 /**************************************************************
 
-	Dynamic Table
-	v 0.4
+    Dynamic Table
+    v 0.4
 
 **************************************************************/
 
 #properties #torrentFiles table,
 #properties #trackers table,
 #transferList table {
-	border: 1px solid #ccc;
-	width: 100%;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    width: 100%;
 }
 
 #properties #torrentFiles th,
 #properties #trackers th,
 #transferList th {
-	background-color: #eee;
-	padding: 4px;
+    background-color: #eee;
+    padding: 4px;
 }
 
 #properties #torrentFiles tr,
 #properties #trackers tr,
 #transferList tr {
-	background-color: #fff;
-	padding: 4px;
+    background-color: #fff;
+    padding: 4px;
 }
 
 
@@ -35,25 +36,25 @@
 #properties #torrentFiles tr.alt,
 #properties #trackers tr.alt,
 #transferList tr.alt {
-	background-color: #eee;
-	padding: 4px;
+    background-color: #eee;
+    padding: 4px;
 }
 
 #properties #torrentFiles td,
 #properties #trackers td,
 #transferList td {
-	padding: 0 2px;
+    padding: 0 2px;
 }
 
 #properties #torrentFiles tr.selected,
 #properties #trackers tr.selected,
 #transferList tr.selected {
-	background-color: #415A8D;
-	color: #fff;
+    background-color: #415A8D;
+    color: #fff;
 }
 #torrentPeersTable tr.selected {
-	background-color: #354158;
-	color: #fff;
+    background-color: #354158;
+    color: #fff;
 }
 
 #torrentsTable tr:hover,
@@ -62,15 +63,15 @@
 #properties #torrentFiles tr.over,
 #properties #trackers tr.over,
 #transferList tr.over {
-	background-color: #ee6600;
-	color: #fff;
+    background-color: #ee6600;
+    color: #fff;
 }
 
 #torrentsTable tr:hover,
 #properties #torrentFiles tr.over,
 #properties #trackers tr.over,
 #transferList tr.over {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 #transferList img.statusIcon {
@@ -83,10 +84,10 @@
 #torrentFiles td,
 #transferList th,
 #transferList td {
-	text-overflow: ellipsis;
-	overflow: hidden;
-	white-space: nowrap;
-	max-width: 300px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 300px;
 }
 
 tr.dynamicTableHeader {

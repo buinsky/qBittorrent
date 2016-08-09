@@ -54,6 +54,11 @@ var loadSelectedCategory = function () {
 };
 loadSelectedCategory();
 
+var onShowViewChanged = function() {};
+var changeView = function() {};
+
+var showRSSView = getLocalStorageItem('show_rss_view', 'false') !== 'false';
+
 function genHash(string) {
     var hash = 0;
     for (var i = 0; i < string.length; i++) {
@@ -158,6 +163,7 @@ window.addEvent('load', function () {
     if (!showTopToolbar) {
         $('showTopToolbarLink').firstChild.style.opacity = '0';
         $('mochaToolbar').addClass('invisible');
+        $('viewTabs').addClass('inMenu');
     }
 
     var speedInTitle = localStorage.getItem('speed_in_browser_title_bar') == "true";
@@ -433,10 +439,12 @@ window.addEvent('load', function () {
         if (showTopToolbar) {
             $('showTopToolbarLink').firstChild.style.opacity = '1';
             $('mochaToolbar').removeClass('invisible');
+            $('viewTabs').removeClass('inMenu');
         }
         else {
             $('showTopToolbarLink').firstChild.style.opacity = '0';
             $('mochaToolbar').addClass('invisible');
+            $('viewTabs').addClass('inMenu');
         }
         MochaUI.Desktop.setDesktopSize();
     });
@@ -450,6 +458,11 @@ window.addEvent('load', function () {
             $('speedInBrowserTitleBarLink').firstChild.style.opacity = '0';
         processServerState();
     });
+
+    $('showRssViewLink').addEvent('click', function(){ toogleShowView('rss'); });
+
+    $('transfersViewTab').addEvent('click', function(){ changeView('transfers'); });
+    $('RSSViewTab').addEvent('click', function(){ changeView('rss'); });
 
     new MochaUI.Panel({
         id : 'transferList',
@@ -564,6 +577,23 @@ window.addEvent('load', function () {
         column : 'mainColumn',
         height : prop_h
     });
+
+    // Implement onSetDesktopSize event by hooking setDesktopSize function. It will be used for view windows resizing
+    MochaUI.Desktop._events = new (new Class({
+            Implements: Events
+        }))();
+
+    MochaUI.Desktop._setDesktopSize = MochaUI.Desktop.setDesktopSize;
+    MochaUI.Desktop.setDesktopSize = function () {
+            this._setDesktopSize();
+            this._events.fireEvent('onSetDesktopSize');
+        }.bind(MochaUI.Desktop);
+
+    MochaUI.Desktop._events.addEvent('onSetDesktopSize', function(){
+            resizeCurrentViewWindow();
+        });
+    if (showRSSView)
+        onShowViewChanged('rss');
 });
 
 function closeWindows() {
@@ -660,3 +690,119 @@ updateTorrentPeersData = function(){
     clearTimeout(loadTorrentPeersTimer);
     loadTorrentPeersData();
 };
+
+var currentView = 'transfers';
+var createRSSViewWindow = function() {};
+var showTransfersView = function() {};
+var showRSSViewWindow = function() {};
+
+toogleShowView = function(view) {
+    switch(view) {
+        case 'rss':
+            showRSSView = !showRSSView;
+            localStorage.setItem('show_rss_view', showRSSView);
+            onShowViewChanged();
+            break;
+    }
+}
+
+onShowViewChanged = function() {
+    $('showRssViewLink').firstChild.style.opacity = showRSSView ? '1' : '0';
+    if (showRSSView) {
+        viewTabs.setStyle('visibility', '');
+    }
+    else {
+        viewTabs.setStyle('visibility', 'hidden');
+        changeView('transfers');
+    }
+}
+
+changeView = function(view) {
+    if (currentView === view)
+        return;
+
+    currentView = view;
+
+    if (currentView === 'transfers')
+        $('transfersViewTab').addClass('selected');
+    else
+        $('transfersViewTab').removeClass('selected');
+
+    if (currentView === 'rss')
+        $('RSSViewTab').addClass('selected');
+    else
+        $('RSSViewTab').removeClass('selected');
+
+    switch(currentView) {
+        case 'transfers':
+            showTransfersView(true);
+            showRSSViewWindow(false);
+            break;
+        case 'rss':
+            showRSSViewWindow(true);
+            showTransfersView(false);
+            break;
+    }
+}
+
+var rssViewWindow = null;
+
+createRSSViewWindow = function(view) {
+    rssViewWindow = new MochaUI.Window({
+            id: 'RSSViewWindow',
+            title: '',
+            padding: 0,
+            headerHeight: 0,
+            maximizable: false,
+            minimizable: false,
+            closable: false,
+            resizable: false,
+            useSpinner: false,
+            container: $('pageWrapper'),
+            restrict:true,
+            footerHeight: 0
+        });
+}
+
+resizeCurrentViewWindow = function() {
+    var viewWindow = null;
+
+    switch (currentView) {
+        case 'transfers':
+            return;
+        case 'rss':
+            viewWindow = rssViewWindow;
+            break;
+    }
+
+    var viewWindowSizeOptions = {};
+    var size = $('pageWrapper').getSize();
+
+    viewWindowSizeOptions.width = size.x;
+    viewWindowSizeOptions.height = size.y;
+    viewWindowSizeOptions.top = '-5px';
+    viewWindowSizeOptions.left = '-5px';
+    viewWindowSizeOptions.centered = false;
+
+    if (viewWindow)
+        viewWindow.resize(viewWindowSizeOptions);
+}
+
+showTransfersView = function(show) {
+    $('pageWrapper').getChildren(['.column', '.columnHandle']).each(function(el){
+            el.setStyle('visibility', show ? '' : 'hidden');
+        });
+}
+
+showRSSViewWindow = function(show) {
+    if (show) {
+        if (!rssViewWindow)
+            createRSSViewWindow();
+        rssViewWindow.show();
+        resizeCurrentViewWindow();
+    }
+    else {
+        if (rssViewWindow)
+            rssViewWindow.hide();
+    }
+}
