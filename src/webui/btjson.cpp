@@ -208,7 +208,7 @@ static const char KEY_LOG_PEER_IP[] = "ip";
 static const char KEY_LOG_PEER_BLOCKED[] = "blocked";
 static const char KEY_LOG_PEER_REASON[] = "reason";
 
-QVariantMap getTranserInfoMap();
+QVariantMap getServerStateMap();
 QVariantMap toMap(BitTorrent::TorrentHandle *const torrent);
 void processMap(QVariantMap prevData, QVariantMap data, QVariantMap &syncData);
 void processHash(QVariantHash prevData, QVariantHash data, QVariantMap &syncData, QVariantList &removedItems);
@@ -324,6 +324,7 @@ QByteArray btjson::getTorrents(QString filter, QString category,
  * Map contain the key:
  *  - "Rid": ID response
  * Map can contain the keys:
+ *  - "sso": server state info only returned flag
  *  - "full_update": full data update flag
  *  - "torrents": dictionary contains information about torrents.
  *  - "torrents_removed": a list of hashes of removed torrents
@@ -359,32 +360,30 @@ QByteArray btjson::getTorrents(QString filter, QString category,
  *  - "queueing": priority system usage flag
  *  - "refresh_interval": torrents table refresh interval
  */
-QByteArray btjson::getSyncMainData(int acceptedResponseId, QVariantMap &lastData, QVariantMap &lastAcceptedData)
+QByteArray btjson::getSyncMainData(int acceptedResponseId, QVariantMap &lastData, QVariantMap &lastAcceptedData, bool serverStateOnly)
 {
     QVariantMap data;
     QVariantHash torrents;
 
-    BitTorrent::Session *const session = BitTorrent::Session::instance();
+    if (!serverStateOnly) {
+        foreach (BitTorrent::TorrentHandle *const torrent, BitTorrent::Session::instance()->torrents()) {
+            QVariantMap map = toMap(torrent);
+            map.remove(KEY_TORRENT_HASH);
+            torrents[torrent->hash()] = map;
+        }
 
-    foreach (BitTorrent::TorrentHandle *const torrent, session->torrents()) {
-        QVariantMap map = toMap(torrent);
-        map.remove(KEY_TORRENT_HASH);
-        torrents[torrent->hash()] = map;
+        QVariantList categories;
+        foreach (const QString &category, BitTorrent::Session::instance()->categories())
+            categories << category;
+
+        data["torrents"] = torrents;
+        data["categories"] = categories;
+    }
+    else {
+        data["sso"] = 1;
     }
 
-    data["torrents"] = torrents;
-
-    QVariantList categories;
-    foreach (const QString &category, session->categories())
-        categories << category;
-
-    data["categories"] = categories;
-
-    QVariantMap serverState = getTranserInfoMap();
-    serverState[KEY_SYNC_MAINDATA_QUEUEING] = session->isQueueingSystemEnabled();
-    serverState[KEY_SYNC_MAINDATA_USE_ALT_SPEED_LIMITS] = session->isAltGlobalSpeedLimitEnabled();
-    serverState[KEY_SYNC_MAINDATA_REFRESH_INTERVAL] = session->refreshInterval();
-    data["server_state"] = serverState;
+    data["server_state"] = getServerStateMap();
 
     return json::toJson(generateSyncData(acceptedResponseId, data, lastAcceptedData, lastData));
 }
@@ -660,10 +659,10 @@ QByteArray btjson::getFilesForTorrent(const QString& hash)
  */
 QByteArray btjson::getTransferInfo()
 {
-    return json::toJson(getTranserInfoMap());
+    return json::toJson(getServerStateMap());
 }
 
-QVariantMap getTranserInfoMap()
+QVariantMap getServerStateMap()
 {
     QVariantMap map;
     BitTorrent::SessionStatus sessionStatus = BitTorrent::Session::instance()->status();
@@ -678,6 +677,9 @@ QVariantMap getTranserInfoMap()
         map[KEY_TRANSFER_CONNECTION_STATUS] = "disconnected";
     else
         map[KEY_TRANSFER_CONNECTION_STATUS] = sessionStatus.hasIncomingConnections() ? "connected" : "firewalled";
+    map[KEY_SYNC_MAINDATA_QUEUEING] = BitTorrent::Session::instance()->isQueueingSystemEnabled();
+    map[KEY_SYNC_MAINDATA_USE_ALT_SPEED_LIMITS] = BitTorrent::Session::instance()->isAltGlobalSpeedLimitEnabled();
+    map[KEY_SYNC_MAINDATA_REFRESH_INTERVAL] = BitTorrent::Session::instance()->refreshInterval();
     return map;
 }
 

@@ -312,12 +312,16 @@ void WebApplication::action_query_getPeerLog()
 
 // GET param:
 //   - rid (int): last response id
+//   - sso (int): if param passed and not equals to 0 server state info only will be returned in the response
 void WebApplication::action_sync_maindata()
 {
-    CHECK_URI(0);
+    bool serverStateOnly = false;
+    if (request().gets.contains("sso") && request().gets["sso"].toInt() != 0)
+        serverStateOnly = true;
     print(btjson::getSyncMainData(request().gets["rid"].toInt(),
         session()->syncMainDataLastResponse,
-        session()->syncMainDataLastAcceptedResponse), Http::CONTENT_TYPE_JSON);
+        session()->syncMainDataLastAcceptedResponse,
+        serverStateOnly), Http::CONTENT_TYPE_JSON);
 }
 
 // GET param:

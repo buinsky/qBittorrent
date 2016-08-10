@@ -280,6 +280,8 @@ window.addEvent('load', function () {
     var syncMainData = function () {
         var url = new URI('sync/maindata');
         url.setData('rid', syncMainDataLastResponseId);
+        if (currentView != 'transfers')
+            url.setData('sso', 1);
         var request = new Request.JSON({
             url : url,
             noCache : true,
@@ -291,15 +293,14 @@ window.addEvent('load', function () {
             },
             onSuccess : function (response) {
                 $('error_div').set('html', '');
-                if (response) {
+
+                // update non server state data
+                if (response && !response['sso']) {
                     var update_categories = false;
                     var full_update = (response['full_update'] == true);
                     if (full_update) {
                         torrentsTable.clear();
                         category_list = {};
-                    }
-                    if (response['rid']) {
-                        syncMainDataLastResponseId = response['rid'];
                     }
                     if (response['categories']) {
                         response['categories'].each(function(category) {
@@ -332,18 +333,26 @@ window.addEvent('load', function () {
                         });
                     torrentsTable.updateTable(full_update);
                     torrentsTable.altRow();
-                    if (response['server_state']) {
-                        var tmp = response['server_state'];
-                        for(var key in tmp)
-                            serverState[key] = tmp[key];
-                        processServerState();
-                    }
                     updateFiltersList();
                     if (update_categories) {
                         updateCategoryList();
                         torrentsTableContextMenu.updateCategoriesSubMenu(category_list);
                     }
                 }
+
+                // update server state data
+                if (response) {
+                    if (response['rid']) {
+                        syncMainDataLastResponseId = response['rid'];
+                    }
+                    if (response['server_state']) {
+                        var tmp = response['server_state'];
+                        for(var key in tmp)
+                            serverState[key] = tmp[key];
+                        processServerState();
+                    }
+                }
+
                 clearTimeout(syncMainDataTimer);
                 syncMainDataTimer = syncMainData.delay(syncMainDataTimerPeriod);
             }
@@ -508,6 +517,8 @@ window.addEvent('load', function () {
             MochaUI.initializeTabs('propertiesTabs');
 
             updatePropertiesPanel = function() {
+                if (currentView != 'transfers')
+                    return;
                 if (!$('prop_general').hasClass('invisible'))
                     updateTorrentData();
                 else if (!$('prop_trackers').hasClass('invisible'))
@@ -737,6 +748,8 @@ changeView = function(view) {
         case 'transfers':
             showTransfersView(true);
             showRSSViewWindow(false);
+            updateMainData();
+            updatePropertiesPanel();
             break;
         case 'rss':
             showRSSViewWindow(true);
