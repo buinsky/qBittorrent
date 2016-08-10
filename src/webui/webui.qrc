@@ -39,5 +39,9 @@
         <file>www/public/upload.html</file>
         <file>www/public/uploadlimit.html</file>
         <file>www/public/newcategory.html</file>
+        <file>www/public/rss.html</file>
+        <file>www/public/rss_article.html</file>
+        <file>www/public/rss_articles_list.html</file>
+        <file>www/public/rss_feeds_list.html</file>
     </qresource>
 </RCC>

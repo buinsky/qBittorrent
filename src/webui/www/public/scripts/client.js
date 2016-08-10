@@ -706,6 +706,7 @@ var currentView = 'transfers';
 var createRSSViewWindow = function() {};
 var showTransfersView = function() {};
 var showRSSViewWindow = function() {};
+var onRSSViewWindowResized = function() {};
 
 toogleShowView = function(view) {
     switch(view) {
@@ -760,10 +761,77 @@ changeView = function(view) {
 
 var rssViewWindow = null;
 
+var initRSSViewWindow = function() {
+    new MochaUI.Column({
+        id : 'rssFeedsListColumn',
+        placement : 'left',
+        container : $('rssContent'),
+        width : 400,
+        resizeLimit : [100, 600]
+    });
+
+    new MochaUI.Column({
+        id : 'rssMainColumn',
+        placement : 'main',
+        container : $('rssContent')
+    });
+
+    new MochaUI.Panel({
+        id : 'rssFeedsListPanel',
+        title : 'Panel',
+        header : false,
+        padding : {
+            top : 0,
+            right : 0,
+            bottom : 0,
+            left : 0
+        },
+        loadMethod : 'xhr',
+        contentURL : 'rss_feeds_list.html',
+        column : 'rssFeedsListColumn',
+        height : 300
+    });
+
+    new MochaUI.Panel({
+        id : 'rssArticlesListPanel',
+        title : 'Panel',
+        header : false,
+        padding : {
+            top : 0,
+            right : 0,
+            bottom : 0,
+            left : 0
+        },
+        loadMethod : 'xhr',
+        contentURL : 'rss_articles_list.html',
+        column : 'rssMainColumn',
+        height : 100
+    });
+
+    new MochaUI.Panel({
+        id : 'rssArticlePanel',
+        title : 'Panel',
+        header : false,
+        padding : {
+            top : 0,
+            right : 0,
+            bottom : 0,
+            left : 0
+        },
+        contentURL : 'rss_article.html',
+        column : 'rssMainColumn',
+        height : 100
+    });
+
+    resizeCurrentViewWindow();
+}
+
 createRSSViewWindow = function(view) {
     rssViewWindow = new MochaUI.Window({
             id: 'RSSViewWindow',
             title: '',
+            loadMethod: 'xhr',
+            contentURL: 'rss.html',
             padding: 0,
             headerHeight: 0,
             maximizable: false,
@@ -773,7 +841,8 @@ createRSSViewWindow = function(view) {
             useSpinner: false,
             container: $('pageWrapper'),
             restrict:true,
-            footerHeight: 0
+            footerHeight: 0,
+            onContentLoaded: initRSSViewWindow
         });
 }
 
@@ -797,8 +866,25 @@ resizeCurrentViewWindow = function() {
     viewWindowSizeOptions.left = '-5px';
     viewWindowSizeOptions.centered = false;
 
-    if (viewWindow)
+    if (viewWindow) {
         viewWindow.resize(viewWindowSizeOptions);
+        switch (currentView) {
+            case 'rss':
+                onRSSViewWindowResized();
+                break;
+        }
+    }
+}
+
+onRSSViewWindowResized = function() {
+    if ($('rssContent')) {
+        var element = $('rssToolButtons'),
+            style = element.currentStyle || window.getComputedStyle(element),
+            height = element.offsetHeight,
+            margin = parseFloat(style.marginTop) + parseFloat(style.marginBottom);
+        $('rssContent').setStyle('height', $('RSSViewWindow_contentWrapper').getSize().y - height - margin - 1);
+    }
+    MUI.Desktop.resizePanels();
 }
 
 showTransfersView = function(show) {

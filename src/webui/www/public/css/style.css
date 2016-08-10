@@ -461,7 +461,7 @@ td.generalLabel {
  * Workaround to prevent the transfer list from
  * disappearing when zooming in the browser.
  */
-#filtersColumn_handle {
+.columnHandle {
     margin-left: -1px;
 }
 
@@ -533,4 +533,34 @@ td.statusBarSeparator {
 
 #viewTabs.inMenu {
     top: -4px;
+}
+
+#RSSViewWindow_content {
+    padding: 0px;
+}
+
+#RSSViewWindow_contentWrapper {
+    background: #f2f2f2;
+}
+
+#rssToolButtons {
+    margin: 5px;
+}
+
+#rssToolButtons button img {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+}
+
+#rssContent {
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+}
+
+@supports (-webkit-appearance:none) {
+    #rssContent .columnHandle {
+        margin-top: 0.3px;
+    }
 }
