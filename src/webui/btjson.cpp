@@ -41,6 +41,8 @@
 #include "base/torrentfilter.h"
 #include "base/net/geoipmanager.h"
 #include "jsonutils.h"
+#include "rss_imp.h"
+#include "base/rss/rssarticle.h"
 
 #include <QDebug>
 #include <QVariant>
@@ -125,6 +127,10 @@ static const char KEY_PEER_CONNECTION_TYPE[] = "connection";
 static const char KEY_PEER_FLAGS[] = "flags";
 static const char KEY_PEER_FLAGS_DESCRIPTION[] = "flags_desc";
 static const char KEY_PEER_RELEVANCE[] = "relevance";
+
+// RSS keys
+static const char KEY_RSS_FEED_NAME[] = "name";
+static const char KEY_RSS_FEED_ARTICLES[] = "articles";
 
 // Tracker keys
 static const char KEY_TRACKER_URL[] = "url";
@@ -432,6 +438,38 @@ QByteArray btjson::getSyncTorrentPeersData(int acceptedResponseId, QString hash,
     }
 
     data["peers"] = peers;
+
+    return json::toJson(generateSyncData(acceptedResponseId, data, lastAcceptedData, lastData));
+}
+
+QByteArray btjson::getSyncRSSData(int acceptedResponseId, QVariantMap &lastData, QVariantMap &lastAcceptedData)
+{
+    QVariantMap data;
+
+    QVariantHash rssFeeds;
+
+    foreach (const Rss::FilePtr& rssFile, RSSImp::rssManager()->rootFolder()->getContent()) {
+        QVariantMap rssFeed;
+
+        rssFeed[KEY_RSS_FEED_NAME] = rssFile->displayName();
+
+        QVariantHash rssArticles;
+
+        Rss::ArticleList articles;
+        articles = rssFile->articleListByDateDesc();
+
+        foreach (const Rss::ArticlePtr& article, articles) {
+            QVariantMap rssArticle;
+
+            rssArticles[article->guid()] = rssArticle;
+        }
+
+        rssFeed[KEY_RSS_FEED_ARTICLES] = rssArticles;
+
+        rssFeeds[rssFile->id()] = rssFeed;
+    }
+
+    data["feeds"] = rssFeeds;
 
     return json::toJson(generateSyncData(acceptedResponseId, data, lastAcceptedData, lastData));
 }

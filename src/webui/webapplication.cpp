@@ -85,6 +85,7 @@ QMap<QString, QMap<QString, WebApplication::Action> > WebApplication::initialize
     ADD_ACTION(query, getPeerLog);
     ADD_ACTION(sync, maindata);
     ADD_ACTION(sync, torrent_peers);
+    ADD_ACTION(sync, rss);
     ADD_ACTION(command, shutdown);
     ADD_ACTION(command, download);
     ADD_ACTION(command, upload);
@@ -336,6 +337,15 @@ void WebApplication::action_sync_torrent_peers()
         session()->syncTorrentPeersLastAcceptedResponse), Http::CONTENT_TYPE_JSON);
 }
 
+// GET param:
+//   - rid (int): last response id
+void WebApplication::action_sync_rss()
+{
+    CHECK_URI(0);
+    print(btjson::getSyncRSSData(request().gets["rid"].toInt(),
+        session()->syncRSSLastResponse,
+        session()->syncRSSLastAcceptedResponse), Http::CONTENT_TYPE_JSON);
+}
 
 void WebApplication::action_version_api()
 {

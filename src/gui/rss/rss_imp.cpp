@@ -64,6 +64,8 @@ namespace Article
     };
 }
 
+Rss::ManagerPtr RSSImp::m_rssManager;
+
 // display a right-click menu
 void RSSImp::displayRSSListMenu(const QPoint& pos)
 {
@@ -460,6 +462,15 @@ QTreeWidgetItem* RSSImp::createFolderListItem(const Rss::FilePtr& rssFile)
     return item;
 }
 
+Rss::ManagerPtr RSSImp::rssManager()
+{
+    if (m_rssManager.isNull()) {
+        m_rssManager.reset(new Rss::Manager);
+        m_rssManager->loadStreamList();
+    }
+    return m_rssManager;
+}
+
 void RSSImp::fillFeedsList(QTreeWidgetItem* parent, const Rss::FolderPtr& rss_parent)
 {
     QList<Rss::FilePtr> children;
@@ -683,9 +694,10 @@ void RSSImp::updateRefreshInterval(uint val)
 }
 
 RSSImp::RSSImp(QWidget *parent):
-    QWidget(parent),
-    m_rssManager(new Rss::Manager)
+    QWidget(parent)
 {
+    rssManager();
+
     setupUi(this);
     // Icons
     actionCopy_feed_URL->setIcon(GuiIconProvider::instance()->getIcon("edit-copy"));
@@ -712,7 +724,6 @@ RSSImp::RSSImp(QWidget *parent):
     deleteHotkey = new QShortcut(QKeySequence::Delete, m_feedList, 0, 0, Qt::WidgetShortcut);
     connect(deleteHotkey, SIGNAL(activated()), SLOT(deleteSelectedItems()));
 
-    m_rssManager->loadStreamList();
     fillFeedsList();
     populateArticleList(m_feedList->currentItem());
 
@@ -759,7 +770,7 @@ RSSImp::~RSSImp()
     saveFoldersOpenState();
     delete editHotkey;
     delete deleteHotkey;
-    delete m_feedList;
+    //delete m_feedList;
     qDebug("RSSImp deleted");
 }
 

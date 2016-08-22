@@ -53,6 +53,7 @@ public:
     RSSImp(QWidget *parent);
     ~RSSImp();
 
+    static Rss::ManagerPtr rssManager();
 public slots:
     void deleteSelectedItems();
     void updateRefreshInterval(uint val);
@@ -92,7 +93,7 @@ private:
     static QTreeWidgetItem* createFolderListItem(const Rss::FilePtr& rssFile);
 
 private:
-    Rss::ManagerPtr m_rssManager;
+    static Rss::ManagerPtr m_rssManager;
     FeedListWidget *m_feedList;
     QListWidgetItem* m_currentArticle;
     QShortcut *editHotkey;
