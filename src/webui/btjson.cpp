@@ -130,7 +130,9 @@ static const char KEY_PEER_RELEVANCE[] = "relevance";
 
 // RSS keys
 static const char KEY_RSS_FEED_NAME[] = "name";
+static const char KEY_RSS_FEED_ICON_PATH[] = "icon_path";
 static const char KEY_RSS_FEED_ARTICLES[] = "articles";
+static const char KEY_RSS_ARTICLE_IS_READ[] = "read";
 
 // Tracker keys
 static const char KEY_TRACKER_URL[] = "url";
@@ -453,6 +455,11 @@ QByteArray btjson::getSyncRSSData(int acceptedResponseId, QVariantMap &lastData,
 
         rssFeed[KEY_RSS_FEED_NAME] = rssFile->displayName();
 
+        if (rssFile->iconPath().startsWith(":/"))
+            rssFeed[KEY_RSS_FEED_ICON_PATH] = rssFile->iconPath().replace(":/icons/oxygen/", "theme/").replace(".png", "");
+        else
+            rssFeed[KEY_RSS_FEED_ICON_PATH] = QString("http://%1/favicon.ico").arg(QUrl(rssFile->id()).host());
+
         QVariantHash rssArticles;
 
         Rss::ArticleList articles;
@@ -460,6 +467,8 @@ QByteArray btjson::getSyncRSSData(int acceptedResponseId, QVariantMap &lastData,
 
         foreach (const Rss::ArticlePtr& article, articles) {
             QVariantMap rssArticle;
+
+            rssArticle[KEY_RSS_ARTICLE_IS_READ] = article->isRead();
 
             rssArticles[article->guid()] = rssArticle;
         }

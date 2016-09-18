@@ -718,10 +718,14 @@ toogleShowView = function(view) {
     }
 }
 
+var rssScript = null;
+
 onShowViewChanged = function() {
     $('showRssViewLink').firstChild.style.opacity = showRSSView ? '1' : '0';
     if (showRSSView) {
         viewTabs.setStyle('visibility', '');
+        if (rssScript === null)
+            rssScript = Asset.javascript('/scripts/rss.js');
     }
     else {
         viewTabs.setStyle('visibility', 'hidden');

@@ -43,5 +43,6 @@
         <file>www/public/rss_article.html</file>
         <file>www/public/rss_articles_list.html</file>
         <file>www/public/rss_feeds_list.html</file>
+        <file>www/public/scripts/rss.js</file>
     </qresource>
 </RCC>

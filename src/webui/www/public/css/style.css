@@ -125,19 +125,24 @@ hr {
     height:100%;
 }
 
-#Filters ul {
+ul.filterList {
     list-style-type: none;
 }
 
-#Filters ul li {
+ul.filterList li {
     margin-left: -16px;
+    white-space: nowrap;
 }
 
-#Filters ul img {
+ul.filterList img {
     padding: 2px 4px;
     vertical-align: middle;
     width: 16px;
     height: 16px;
+}
+
+#rssFeedsList li {
+    padding-left: 16px;
 }
 
 .selectedFilter {
